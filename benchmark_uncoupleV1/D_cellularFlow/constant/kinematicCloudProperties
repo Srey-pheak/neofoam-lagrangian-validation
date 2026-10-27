@@ -1,0 +1,148 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      kinematicCloudProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// written by scripts/make_case.py from scripts/params.py: change params.py, not this file
+
+solution
+{
+    active          true;
+    coupled         false;      // one-way: air is frozen
+    transient       yes;
+    cellValueSourceCorrection off;
+    maxCo           1.0;
+
+    locate          findCell;   // OpenFOAM findCell, cell value of U
+
+    interpolationSchemes
+    {
+        rho             cell;
+        U               cell;
+        mu              cell;
+    }
+
+    integrationSchemes
+    {
+        U               RK2;
+    }
+}
+
+constantProperties
+{
+    rho0            2500;       // solid particle
+    youngsModulus   1e9;        // required by colliding cloud, unused (no collisions)
+    poissonsRatio   0.35;
+}
+
+subModels
+{
+    particleForces
+    {
+        stokesDrag;             // linear drag, as Maxey (1987); no gravity
+    }
+
+    injectionModels
+    {
+        particle_St0.1        // St = 0.1: d = 36.00 um, tau_p = 0.01 s
+        {
+            type            manualInjection;
+            massTotal       0;
+            parcelBasisType fixed;
+            nParticle       1;
+            SOI             0;
+            positionsFile   "kinematicCloudPositions.St0.1";
+            U0              (0 0 0);
+            sizeDistribution
+            {
+                type        fixedValue;
+                fixedValueDistribution
+                {
+                    value   3.6000000000000001e-05;
+                }
+            }
+        }
+
+        particle_St0.5        // St = 0.5: d = 80.50 um, tau_p = 0.05 s
+        {
+            type            manualInjection;
+            massTotal       0;
+            parcelBasisType fixed;
+            nParticle       1;
+            SOI             0;
+            positionsFile   "kinematicCloudPositions.St0.5";
+            U0              (0 0 0);
+            sizeDistribution
+            {
+                type        fixedValue;
+                fixedValueDistribution
+                {
+                    value   8.0498447189992435e-05;
+                }
+            }
+        }
+
+        particle_St1        // St = 1: d = 113.84 um, tau_p = 0.1 s
+        {
+            type            manualInjection;
+            massTotal       0;
+            parcelBasisType fixed;
+            nParticle       1;
+            SOI             0;
+            positionsFile   "kinematicCloudPositions.St1";
+            U0              (0 0 0);
+            sizeDistribution
+            {
+                type        fixedValue;
+                fixedValueDistribution
+                {
+                    value   0.00011384199576606166;
+                }
+            }
+        }
+
+        particle_St2        // St = 2: d = 161.00 um, tau_p = 0.2 s
+        {
+            type            manualInjection;
+            massTotal       0;
+            parcelBasisType fixed;
+            nParticle       1;
+            SOI             0;
+            positionsFile   "kinematicCloudPositions.St2";
+            U0              (0 0 0);
+            sizeDistribution
+            {
+                type        fixedValue;
+                fixedValueDistribution
+                {
+                    value   0.00016099689437998487;
+                }
+            }
+        }
+    }
+
+    dispersionModel          none;
+    patchInteractionModel    standardWallInteraction;
+    standardWallInteractionCoeffs
+    {
+        type        rebound;            // unused: no walls
+    }
+    surfaceFilmModel         none;
+    stochasticCollisionModel none;
+    collisionModel           none;
+}
+
+cloudFunctions
+{}
+
+// ************************************************************************* //

@@ -1,0 +1,35 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     neoIcoUncoupledKinematicParcelFoam;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         8;
+deltaT          5e-5;
+
+writeControl    timeStep;
+writeInterval   40;             // every 40 steps = every 0.002 s
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  16;             // needed to compare with the replica at round-off
+writeCompression off;
+timeFormat      general;
+timePrecision   10;
+runTimeModifiable false;
+
+// ************************************************************************* //

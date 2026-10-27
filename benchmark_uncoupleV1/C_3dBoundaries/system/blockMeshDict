@@ -1,0 +1,46 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 1 m box, 10 x 10 x 10 cells of 0.1 m: the particles cross cells (tests findCell)
+// and one particle leaves through the +x face.
+scale   1;
+
+L       1;
+
+vertices
+(
+    (0  0  0) ($L 0  0) ($L $L 0) (0  $L 0)
+    (0  0  $L) ($L 0  $L) ($L $L $L) (0  $L $L)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (10 10 10) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    sides
+    {
+        type patch;
+        faces
+        (
+            (0 3 2 1) (4 5 6 7) (0 4 7 3) (1 2 6 5) (0 1 5 4) (3 7 6 2)
+        );
+    }
+);
+
+// ************************************************************************* //

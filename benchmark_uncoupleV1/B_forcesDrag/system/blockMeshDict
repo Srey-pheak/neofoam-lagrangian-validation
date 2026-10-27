@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// One single hex cell (0.5 x 0.5 x 35 m column): the particles never cross a
+// face. 35 m: the 500 um particle falls about 28 m in 8 s.
+scale   1;
+
+Lx      0.5;
+Ly      0.5;
+Lz      35;
+
+vertices
+(
+    (0   0   0  ) ($Lx 0   0  ) ($Lx $Ly 0  ) (0   $Ly 0  )
+    (0   0   $Lz) ($Lx 0   $Lz) ($Lx $Ly $Lz) (0   $Ly $Lz)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (1 1 1) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    sides
+    {
+        type patch;
+        faces
+        (
+            (0 3 2 1) (4 5 6 7) (0 4 7 3) (1 2 6 5) (0 1 5 4) (3 7 6 2)
+        );
+    }
+);
+
+// ************************************************************************* //

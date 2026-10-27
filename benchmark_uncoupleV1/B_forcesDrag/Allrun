@@ -1,0 +1,27 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+# Test B: five solid particles (d = 10, 50, 100, 200, 500 um, rho 2500) fall
+# from rest in still air (drag + gravity) and reach their terminal velocity.
+#
+# NeoFOAM only (neoIcoUncoupledKinematicParcelFoam):  ./Allrun
+# Clean the case again:                               ./Allclean
+#
+# Output: postProcessing/lagrangian/kinematicCloud/particles.csv
+
+# Open MPI 5 on some machines hangs in MPI_Init without mpirun (TCP transport)
+export OMPI_MCA_btl=${OMPI_MCA_btl:-self,vader}
+NEOFOAM_BIN=${NEOFOAM_BIN:?set NEOFOAM_BIN to <NeoFOAM>/build/production/bin}
+
+restore0Dir
+
+runApplication blockMesh
+
+runApplication "$NEOFOAM_BIN/neoIcoUncoupledKinematicParcelFoam"
+
+# The solver writes the particles to the CSV only; the time folders 0.001 ... hold
+# only OpenFOAM bookkeeping. Remove them (keeps 0/).
+foamListTimes -rm > /dev/null
+
+#------------------------------------------------------------------------------
