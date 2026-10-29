@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|  \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     neoIcoKinematicParcelFoam;
+
+executor        Serial;
+allocator       default;
+
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         3;              // 600 steps at dt = 5e-3
+deltaT          5e-3;
+
+writeControl    timeStep;
+writeInterval   1;              // U and the particles every step: the replay needs both
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  16;            // the replay reads the cell values of U; 6 digits is not enough
+writeCompression off;
+timeFormat      general;
+timePrecision    10;
+runTimeModifiable false;
+adjustTimeStep  no;
+maxCo           0.2;
+maxDeltaT       1;
+
+// ************************************************************************* //

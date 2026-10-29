@@ -7,9 +7,15 @@ constant/polyMesh/
 log.*
 *.csv
 *.png
+!*_setup.png
 *.pdf
 __pycache__/
 
 # OpenFOAM time folders (0, 0.005, 1e-05, ...), but not the 0.orig inputs
 [0-9]*/
 !0.orig/
+# but not the numbered test folders (01_integrators, ..., 06_cavity)
+![0-9][0-9]_*/
+
+# ParaView case files (touched by the run scripts)
+*.foam

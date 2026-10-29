@@ -1,0 +1,80 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Test 6: the neoIcoFoam cavity tutorial (1 x 1 x 0.1 m), but 20 x 20 x 1 cells
+// instead of 100 x 100 x 1. Cell size 0.05 m = the Courant number 0.1 at
+// dt = 5e-3 s and lid speed 1 m/s. Fewer cells because U is written every step
+// (the Python replay reads it): 400 cells keep the time folders small.
+//
+// Cell ordering is i fastest, then j (single cell in z): cellID = i + 20*j.
+// scripts/replay_F.py relies on this.
+
+scale   1.0;
+
+vertices
+(
+    (0 0 0)
+    (1 0 0)
+    (1 1 0)
+    (0 1 0)
+    (0 0 0.1)
+    (1 0 0.1)
+    (1 1 0.1)
+    (0 1 0.1)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    movingWall
+    {
+        type wall;
+        faces
+        (
+            (3 7 6 2)
+        );
+    }
+    fixedWalls
+    {
+        type wall;
+        faces
+        (
+            (0 4 7 3)
+            (2 6 5 1)
+            (1 5 4 0)
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+
+// ************************************************************************* //

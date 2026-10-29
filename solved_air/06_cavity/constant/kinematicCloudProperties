@@ -1,0 +1,99 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      kinematicCloudProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solution
+{
+    active          true;
+    coupled         false;      // one-way: the particles do not act on the air
+    transient       yes;
+    cellValueSourceCorrection off;
+
+    // Locate: OpenFOAM mesh.findCell on the host. This is the verified path;
+    // 'walk' is rejected by neoIcoKinematicParcelFoam (its CarrierField would be
+    // built once from the start U and would not see the air change).
+    locate          findCell;
+
+    // IMPORTANT: KinematicParcel::move limits every sub-step to a fraction
+    // maxCo of deltaT (f = min(f, maxCo)). maxCo = 1 -> exactly one particle
+    // step per deltaT, which is what the Python replay of test 6 assumes.
+    maxCo           1.0;
+
+    interpolationSchemes
+    {
+        rho             cell;
+        U               cell;     // take the cell value of U: no particle sub-cell search
+        mu              cell;
+    }
+
+    integrationSchemes
+    {
+        U               RK2;      // same RK2 as the Python replay (dt = 5e-3 = 0.43 tau_p)
+    }
+}
+
+constantProperties
+{
+    rho0            2500;       // solid particle
+    youngsModulus   1e9;        // required by colliding cloud, unused (no collisions)
+    poissonsRatio   0.35;
+}
+
+subModels
+{
+    particleForces
+    {
+        stokesDrag;             // Stokes: CdRe = 24. Particle Re < 0.1 in this flow.
+                                // No gravity: the particles only follow the air, so
+                                // only the air hand-over is tested.
+    }
+
+    injectionModels
+    {
+        particle_d1mm       // d = 1 mm, tau_p = 0.0116 s, released at rest near the lid
+        {
+            type            manualInjection;
+            massTotal       0;
+            parcelBasisType fixed;
+            nParticle       1;
+            SOI             0;
+            positionsFile   "kinematicCloudPositions";
+            U0              (0 0 0);
+            sizeDistribution
+            {
+                type        fixedValue;
+                fixedValueDistribution
+                {
+                    value   1e-03;
+                }
+            }
+        }
+    }
+
+    dispersionModel          none;
+    patchInteractionModel    standardWallInteraction;
+    standardWallInteractionCoeffs
+    {
+        type        rebound;            // never reached: the cavity is closed
+    }
+    surfaceFilmModel         none;
+    stochasticCollisionModel none;
+    collisionModel           none;
+}
+
+cloudFunctions
+{}
+
+// ************************************************************************* //

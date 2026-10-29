@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       vectorField;
+    object      kinematicCloudPositions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 5 particles near the lid (y = 0.913), where the air moves first and most.
+// x is deliberately off the cell faces (cell size 0.05): x = 0.113, 0.313, ...
+// y = 0.913 = cell 18 of 20, well inside it. z = 0.05 = the middle of the single
+// cell in the empty direction.
+
+(
+(0.113 0.913 0.05)
+(0.313 0.913 0.05)
+(0.513 0.913 0.05)
+(0.713 0.913 0.05)
+(0.913 0.913 0.05)
+)
+
+// ************************************************************************* //

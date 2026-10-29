@@ -10,8 +10,8 @@ different programs and make different claims; keep them separate.
 
 | Suite | Solver | Carrier | Scope | Status |
 |---|---|---|---|---|
-| [benchmark_uncoupleV1](benchmark_uncoupleV1/README.md) | `neoIcoUncoupledKinematicParcelFoam` | **frozen**, read once from `0/U` | particle physics: integrators, drag, gravity, cell location, exit (A–D, checks, CPU/GPU, OpenFOAM comparison) | A–D PASS |
-| [benchmark_coupledV1](benchmark_coupledV1/README.md) | `neoIcoKinematicParcelFoam` | **live**, PISO solves `U` every step | hand-over of the solved flow to the particles; coupled executable (E) | E PASS |
+| [frozen_air](frozen_air/README.md) | `neoIcoUncoupledKinematicParcelFoam` | **frozen**, read once from `0/U` | particle physics: integrators, drag, gravity, cell location, exit (1–4, checks, CPU/GPU, OpenFOAM comparison) | 1–4 PASS |
+| [solved_air](solved_air/README.md) | `neoIcoKinematicParcelFoam` | **live**, PISO solves `U` every step | hand-over of the solved flow to the particles; coupled executable (5, 6) | 5 PASS; 6 PASS |
 
 **Benchmark 1** verifies the particle model in isolation (Q3–Q8, Q1, Q2, Q10).
 **Benchmark 2** verifies that the same model works with a carrier that is solved
@@ -40,15 +40,19 @@ source /usr/lib/openfoam/openfoam2406/etc/bashrc
 export NEOFOAM_BIN=<NeoFOAM>/build/production/bin
 
 # Benchmark 1 (frozen carrier)
-cd neofoam-lagrangian-validation/benchmark_uncoupleV1
-A_integrators/scripts/run_A.sh
-B_forcesDrag/scripts/run_B.sh
-C_3dBoundaries/scripts/run_C.sh
-D_cellularFlow/scripts/run_D.sh
+cd neofoam-lagrangian-validation/frozen_air
+01_integrators/scripts/run_A.sh
+02_drag_settling/scripts/run_B.sh
+03_motion_3d_exit/scripts/run_C.sh
+04_cellular_flow/scripts/run_D.sh
 
-# Benchmark 2 (live carrier); compares to the output of test C, so run C first
-cd neofoam-lagrangian-validation/benchmark_coupledV1/E_coupledUniform
+# Benchmark 2 (live carrier); compares to the output of test 3, so run test 3 first
+cd neofoam-lagrangian-validation/solved_air/05_uniform_flow
 scripts/run_E.sh
+
+# Test 6 (live non-uniform air; keeps the time folders its replay reads)
+cd ../06_cavity
+scripts/run_F.sh
 ```
 
 For the exact pass criteria and recorded results, see each suite's `README.md`
@@ -59,18 +63,20 @@ and `RECORD.md`.
 ```
 neofoam-lagrangian-validation/
 ├── README.md                     this index
-├── benchmark_uncoupleV1/         Benchmark 1 — frozen carrier
-│   ├── A_integrators/
-│   ├── B_forcesDrag/
-│   ├── C_3dBoundaries/
-│   ├── D_cellularFlow/
+├── frozen_air/         Benchmark 1 — frozen carrier
+│   ├── 01_integrators/
+│   ├── 02_drag_settling/
+│   ├── 03_motion_3d_exit/
+│   ├── 04_cellular_flow/
 │   ├── checks/
 │   ├── cpu_vs_gpu/
 │   ├── reference_openfoam/
 │   ├── README.md
 │   └── RECORD.md
-├── benchmark_coupledV1/          Benchmark 2 — live carrier, one-way
-│   ├── E_coupledUniform/
+├── solved_air/          Benchmark 2 — live carrier, one-way
+│   ├── 05_uniform_flow/
+│   ├── 06_cavity/
+│   ├── draw_setups.py
 │   ├── README.md
 │   └── RECORD.md
 └── .gitignore                    keeps run output (runs/, results/, time folders) out of git
@@ -78,10 +84,10 @@ neofoam-lagrangian-validation/
 
 ## Naming
 
-- `benchmark_uncoupleV1` keeps its original name to avoid rewriting the paths in
+- `frozen_air` keeps its original name to avoid rewriting the paths in
   the existing Benchmark 1 scripts and results. It is the **uncoupled**
   (frozen-carrier) suite.
-- `benchmark_coupledV1` is the **coupled** (live-carrier, one-way) suite.
+- `solved_air` is the **coupled** (live-carrier, one-way) suite.
 - “Coupled” in the folder name means “fluid and particles in one time loop”, not
   two-way coupling. For two-way coupling, a momentum source from the particles
   would have to be added to the fluid equation; that is not implemented.

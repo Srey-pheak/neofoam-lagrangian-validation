@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+rhoInf          1.2;    // carrier density used by the cloud (field "rho")
+
+transportModel  Newtonian;
+
+nu              0.01;    // test fluid, as the neoIcoFoam cavity tutorial: Re = 100
+                         // mu = rhoInf*nu = 0.012 Pa s -> tau_p = 0.0116 s for d = 1 mm
+
+// ************************************************************************* //
